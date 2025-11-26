@@ -127,7 +127,7 @@ function buildHoverContent(issues: GlitchTipIssue[]): vscode.Hover {
 
 async function fetchGlitchTipData() {
     const config = vscode.workspace.getConfiguration('glitchtip');
-    const baseUrl = config.get<string>('url');
+    const baseUrl = config.get<string>('url')?.replace(/\/$/, '');
     const token = config.get<string>('authToken');
     const org = config.get<string>('organizationSlug');
     const project = config.get<string>('projectSlug');
@@ -150,13 +150,14 @@ async function fetchGlitchTipData() {
             }
         });
 
+        const responseText = await issuesRes.text();
+
         if (!issuesRes.ok) {
             console.error(`API Error: ${issuesRes.status} ${issuesRes.statusText}`);
-            console.error((await issuesRes.text()).substring(0, 200));
+            console.error(responseText.substring(0, 200));
             return;
         }
 
-        const responseText = await issuesRes.text();
         let issues: any[];
 
         try {
@@ -213,8 +214,6 @@ async function fetchGlitchTipData() {
                 }
 
                 const list = fileMap.get(line)!;
-                console.log(`Mapping issue ${rawIssue.shortId} to ${localPath}:${line}`);
-                console.log(`rawIssue: ${JSON.stringify(rawIssue)}`);
                 if (!list.find(i => i.id === rawIssue.id)) {
                     list.push({
                         id: rawIssue.id,
@@ -239,8 +238,6 @@ async function findLocalFile(glitchTipPath: string): Promise<string | null> {
 
     const pattern = `**/${glitchTipPath}`;
     const foundFiles = await vscode.workspace.findFiles(pattern, '**/node_modules/**', 1);
-
-    console.log(`Searching for ${glitchTipPath}, found: ${foundFiles.map(f => f.fsPath).join(', ')}`);
 
     return foundFiles.length > 0 ? foundFiles[0].fsPath : null;
 }
