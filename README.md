@@ -1,6 +1,9 @@
 # glitch-vsc README
 
-A api-wrapper extension for GlitchTip error monitoring platform in Visual Studio Code and Cursor
+An api-wrapper extension for GlitchTip error monitoring platform in Visual Studio Code and Cursor
+
+To get started, set-up your glitchtip project using ctrl+shift*p/cmd+shift+p and selecting "GlitchTip: Link Account",
+then follow the prompts.
 
 ## Features
 
